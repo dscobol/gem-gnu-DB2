@@ -181,17 +181,17 @@ And Run:
 The records in the table should be displayed.
 
 ### Running the Code:
-Starting with CUSTINQ
 
-Copy docs/Code-prep-bind.txt into the sql directory and rename to: CUSTINQ.sql. NOTE: Linux is case-sensitive. CUSTINQ must be uppercase.
-
-Update the top line replacing DB with MURACH, username with the Murach DB userid (typically db2inst1) and the password.
-
-Note: This next step only needs to be done once.
+#### This next step only needs to be done once.
 
 Copy docs/Code-GETDBID.txt into the tcbl directory and rename to: GETDBID.cbl.
 
 Edit GETDBID.cbl changing 'username' to the userid and 'password' to the password. Only replace the text within the quotes! Make sure the userid and password are surrounded by quotes. NOTE: DB2/SQL is not as case-sensitive as Linux BUT the password MUST match the case of the password when you created the userid.
+
+#### Run CUSTINQ
+Copy docs/Code-prep-bind.txt into the sql directory and rename to: CUSTINQ.sql. NOTE: Linux is case-sensitive. CUSTINQ must be uppercase.
+
+Update the top line replacing DB with MURACH, username with the Murach DB userid (typically db2inst1) and the password.
 
 The "job" is divided into 2 scripts:
 - "prep, bind, compile, and link"
@@ -212,3 +212,120 @@ and the results will print on the screen.
 The instructions for using the program are in the book.
 
 Hint: 400001 is a good customer number. Look at the data you loaded for other good customer numbers.
+
+#### Run INVREG
+Copy docs/Code-prep-bind.txt into the sql directory and rename to: INVREG.sql. NOTE: Linux is case-sensitive. INVREG must be uppercase.
+
+Update the top line replacing DB with MURACH, username with the Murach DB userid (typically db2inst1) and the password.
+
+The "job" is divided into 2 scripts:
+- "prep, bind, compile, and link"
+- "run".
+
+In the terminal, cd into the jcl directory and run:
+```
+./invreg-compile.sh
+```
+Watch the output. There should be 0 errors on the prep/bind, press Enter to continue and the actual compile should also say "Complier Return code was ZERO".
+
+If so, in the terminal run:
+```
+./invreg-run.sh
+```
+and some results will print on the screen, and a report will be created in the /spool directory.
+
+#### Run SALESINQ
+Copy docs/Code-prep-bind.txt into the sql directory and rename to: SALESINQ.sql. NOTE: Linux is case-sensitive. SALESINQ must be uppercase.
+
+Update the top line replacing DB with MURACH, username with the Murach DB userid (typically db2inst1) and the password.
+
+The "job" is divided into 2 scripts:
+- "prep, bind, compile, and link"
+- "run".
+
+In the terminal, cd into the jcl directory and run:
+```
+./salesinq-compile.sh
+```
+Watch the output. There should be 0 errors on the prep/bind, press Enter to continue and the actual compile should also say "Complier Return code was ZERO".
+
+If so, in the terminal run:
+```
+./salesinq-run.sh
+```
+and some results will print on the screen.
+
+The instructions for using the program are in the book.
+
+Hint: 400001 is a good customer number. Look at the data you loaded for other good customer numbers.
+
+#### Run UPDTCUST
+
+**Before you run UPDTCUST**
+
+An input for UPDTCUST is an Indexed file.
+
+Run:
+```
+./VSCBEX01.sh
+```
+to create that Indexed file.
+
+Copy docs/Code-prep-bind.txt into the sql directory and rename to: UPDTCUST.sql. NOTE: Linux is case-sensitive. UPDTCUST must be uppercase.
+
+Update the top line replacing DB with MURACH, username with the Murach DB userid (typically db2inst1) and the password.
+
+The "job" is divided into 2 scripts:
+- "prep, bind, compile, and link"
+- "run".
+
+In the terminal, cd into the jcl directory and run:
+```
+./updtcust-compile.sh
+```
+Watch the output. There should be 0 errors on the prep/bind, press Enter to continue and the actual compile should also say "Complier Return code was ZERO".
+
+If so, in the terminal run:
+```
+./updtcust-run.sh
+```
+and some results will print on the screen and an errcustmrs.idat file will be written to the idata directory.
+
+#### Run UPDTROLL
+
+**Before you run UPDTROLL**
+
+UPDTCUST made changes to the CUSTOMERS table.
+
+To restore the table:
+
+go to the SQLScripts/CUSTOMER directory
+
+Run:
+```
+./db2_create_table.sh
+```
+Then:
+```
+./db2_insert_data.sh
+```
+
+Copy docs/Code-prep-bind.txt into the sql directory and rename to: UPDTROLL.sql. NOTE: Linux is case-sensitive. UPDTROLL must be uppercase.
+
+Update the top line replacing DB with MURACH, username with the Murach DB userid (typically db2inst1) and the password.
+
+The "job" is divided into 2 scripts:
+- "prep, bind, compile, and link"
+- "run".
+
+In the terminal, cd into the jcl directory and run:
+```
+./updtroll-compile.sh
+```
+Watch the output. There should be 0 errors on the prep/bind, press Enter to continue and the actual compile should also say "Complier Return code was ZERO".
+
+If so, in the terminal run:
+```
+./updtroll-run.sh
+```
+and some results will print on the screen and an errcustmrs2.idat file will be written to the idata directory.
