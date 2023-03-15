@@ -1,0 +1,182 @@
+       IDENTIFICATION DIVISION.
+      *
+       PROGRAM-ID.    CUSTINQ.
+      *
+       ENVIRONMENT DIVISION.
+      *
+       INPUT-OUTPUT SECTION.
+      *
+       FILE-CONTROL.
+      *
+       DATA DIVISION.
+      *
+       FILE SECTION.
+      *
+       WORKING-STORAGE SECTION.
+      *
+       01  SWITCHES.
+      *
+           05  END-OF-INQUIRIES-SW     PIC X   VALUE 'N'.
+               88  END-OF-INQUIRIES            VALUE 'Y'.
+           05  CUSTOMER-FOUND-SW       PIC X.
+               88  CUSTOMER-FOUND              VALUE 'Y'.
+           EXEC SQL
+               INCLUDE SQLCA
+           END-EXEC.
+      *
+      ***** Convert to GnuCOBOL
+      ***** Start of Step 1
+      *     No DCLGEN member to INCLUDE
+      *     Comment this INCLUDE out
+      *    EXEC SQL
+      *        INCLUDE CUSTOMER
+      *    END-EXEC.
+      *
+      *     Add DECLARE TABLE
+           EXEC SQL
+           DECLARE CUSTOMERS TABLE
+           (
+            CUSTNO        CHAR(6) not null,
+               FNAME         CHAR(20) not null,
+               LNAME         CHAR(30) not null,
+               ADDR          CHAR(30) not null,
+               CITY          CHAR(20) not null,
+               STATE         CHAR(2) not null,
+               ZIPCODE       CHAR(10) not null)
+           END-EXEC.
+
+      *     Add DECLARE SECTION
+           EXEC SQL BEGIN DECLARE SECTION END-EXEC.
+       01  Customer-Row.
+           12 CUSTNO     PIC X(06).
+           12 FNAME      PIC X(20).
+           12 LNAME      PIC X(30).
+           12 ADDR       PIC X(30).
+           12 CITY       PIC X(20).
+           12 STATE      PIC X(02).
+           12 ZIPCODE    PIC X(10).
+
+      *    DB1 connection parameters.
+       01  DB1-DBName                 PIC X(8).
+       01  DB1-User-ID                PIC X(10).
+       01  DB1-Password.
+           49 DB1-Passwd-Length       PIC S9(4) COMP-5  VALUE 0.
+           49 DB1-Passwd-Name         PIC X(18).
+           EXEC SQL END DECLARE SECTION END-EXEC.
+
+      *     Add status check for connection info.
+       01  WS-SQL-STATUS                PIC S9(9) COMP-5.
+           88 SQL-STATUS-OK             VALUE    0.
+           88 SQL-STATUS-NOT-FOUND      VALUE  100.
+           88 SQL-STATUS-DUP            VALUE -803.
+
+      ***** End of Step 1
+
+       PROCEDURE DIVISION.
+      *
+       000-DISPLAY-CUSTOMER-ROWS.
+      *     Step 2
+      *     Add Paragraph to connect to the DB
+           PERFORM 9800-Connect-to-DB1.
+      *
+           PERFORM 100-DISPLAY-CUSTOMER-ROW
+               UNTIL END-OF-INQUIRIES.
+           STOP RUN.
+      *
+       100-DISPLAY-CUSTOMER-ROW.
+      *
+           PERFORM 110-ACCEPT-CUSTOMER-NUMBER.
+           IF NOT END-OF-INQUIRIES
+               MOVE 'Y' TO CUSTOMER-FOUND-SW
+               PERFORM 120-GET-CUSTOMER-ROW
+               IF CUSTOMER-FOUND
+                   PERFORM 130-DISPLAY-CUSTOMER-LINES
+               ELSE
+                   PERFORM 140-DISPLAY-ERROR-LINES.
+      *
+       110-ACCEPT-CUSTOMER-NUMBER.
+      *
+           DISPLAY '------------------------------------------------'.
+           DISPLAY 'KEY IN THE NEXT CUSTOMER NUMBER AND PRESS ENTER,'.
+           DISPLAY 'OR KEY IN 999999 AND PRESS ENTER TO QUIT.'.
+           ACCEPT CUSTNO.
+           IF CUSTNO = '999999'
+               MOVE 'Y' TO END-OF-INQUIRIES-SW.
+      *
+       120-GET-CUSTOMER-ROW.
+      *
+           EXEC SQL
+               SELECT CUSTNO,    FNAME,       LNAME,
+                      ADDR,      CITY,        STATE,
+                      ZIPCODE
+               INTO  :CUSTNO,       :FNAME,          :LNAME,
+                     :ADDR,         :CITY,           :STATE,
+                     :ZIPCODE
+               FROM   CUSTOMERS
+                   WHERE  CUSTNO = :CUSTNO
+           END-EXEC.
+      *
+           IF SQLCODE NOT = 0
+               MOVE 'N' TO CUSTOMER-FOUND-SW.
+      *
+       130-DISPLAY-CUSTOMER-LINES.
+      *
+           DISPLAY '------------------------------------------------'.
+           DISPLAY '   CUSTOMER ' CUSTNO.
+           DISPLAY '   NAME     ' FNAME ' ' LNAME.
+           DISPLAY '   ADDRESS  ' ADDR.
+           DISPLAY '            ' CITY ' ' STATE ' '
+                                  ZIPCODE.
+      *
+       140-DISPLAY-ERROR-LINES.
+      *
+           DISPLAY '------------------------------------------------'.
+           DISPLAY '   CUSTOMER NUMBER ' CUSTNO ' NOT FOUND.'.
+      *
+      *     Step 2 - the actual connection.
+       9800-Connect-to-DB1.
+           PERFORM 9810-Setup-DB1-Connection.
+           IF SQL-STATUS-OK
+              CONTINUE
+           ELSE
+              DISPLAY "*** The DB connection is not valid!***"
+              DISPLAY "Exiting the program.!"
+              GOBACK
+           END-IF.
+
+       9810-Setup-DB1-Connection.
+           PERFORM 9811-Get-Credentials.
+           PERFORM 9812-Create-Connection-To-DB1.
+
+       9811-Get-Credentials.
+           ACCEPT DB1-DBName FROM ENVIRONMENT 'db2name'.
+           ACCEPT DB1-User-ID FROM ENVIRONMENT 'username'.
+           ACCEPT DB1-Passwd-Name FROM ENVIRONMENT 'password'.
+
+      *    Passwords in a CONNECT statement should be entered
+      *    in a VARCHAR format with the length of the input string.
+           INSPECT DB1-Passwd-Name
+              TALLYING DB1-Passwd-Length
+              FOR CHARACTERS BEFORE INITIAL " ".
+
+      D    DISPLAY "DB1-DBName " DB1-DBName.
+      D    DISPLAY "DB1-User-ID " DB1-User-ID.
+      D    DISPLAY "DB1-Passwd-Name " DB1-Passwd-Name.
+
+       9812-Create-Connection-To-DB1.
+           PERFORM 9814-Connect-To-DB1
+           IF SQL-STATUS-OK
+              CONTINUE
+           ELSE
+              DISPLAY "CUSTINQ: userid and/or password invalid"
+              DISPLAY "CUSTINQ: Can not connect, exiting"
+              GOBACK
+           END-IF.
+
+       9814-Connect-To-DB1.
+           EXEC SQL
+                CONNECT TO :DB1-DBName
+                USER :DB1-User-ID
+                USING :DB1-Password
+              END-EXEC.
+           MOVE SQLCODE TO WS-SQL-STATUS.

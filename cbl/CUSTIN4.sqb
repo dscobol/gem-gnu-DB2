@@ -25,7 +25,7 @@
            END-EXEC.
 
            EXEC SQL
-           DECLARE CUSTOMERS TABLE
+           DECLARE CUSTOMERS TABLE 
            (
             CUSTNO        CHAR(6) not null,
            	FNAME         CHAR(20) not null,
@@ -34,8 +34,8 @@
            	CITY          CHAR(20) not null,
            	STATE         CHAR(2) not null,
            	ZIPCODE       CHAR(10) not null)
-           END-EXEC.
-
+           END-EXEC.           
+           
            EXEC SQL BEGIN DECLARE SECTION END-EXEC.
        01  HV-Customer-Row.
            12 HV-Cust-Number          PIC X(06).
@@ -46,12 +46,14 @@
            12 HV-Cust-State           PIC X(02).
            12 HV-Cust-ZipCode         PIC X(10).
 
-      *    DB1 connection parameters.
-       01  DB1-DBName                 PIC X(8).
-       01  DB1-User-ID                PIC X(10).
-       01  DB1-Password.
-           49 DB1-Passwd-Length       PIC S9(4) COMP-5  VALUE 0.
-           49 DB1-Passwd-Name         PIC X(18).
+      *    This is hardcoded for the MURACH DB.
+      *    You might need to update this for your DB.
+       01  DB-Connection-Info.
+           12 DB-Alias                PIC X(8) VALUE 'MURACH'.
+           12 DB-User-ID              PIC X(10).
+           12 DB-Password.
+              15 DB-Passwd-Length     PIC S9(4) COMP-5  VALUE 0.
+              15 DB-Passwd-Name       PIC X(18).
            EXEC SQL END DECLARE SECTION END-EXEC.
       *******************
 
@@ -67,6 +69,9 @@
            12 WS-Find-Customer-Flag    PIC X.
               88 WS-Customer-Found     VALUE 'Y'.
               88 WS-Customer-Not-Found VALUE 'N'.
+
+       01  WS-Called-Programs.
+           12 WS-GetDBId               PIC X(8) VALUE SPACES.
 
        01 EOJ-Display-Messages.
            12 EOJ-End-Message PIC X(042) VALUE
@@ -116,14 +121,14 @@
        2130-Display-Customer-Lines.
            DISPLAY '-------------Customer Inquiry--------------------'.
            DISPLAY '-------------------------------------------------'.
-           DISPLAY ' Customer: '
+           DISPLAY ' Customer: ' 
               HV-Cust-Number.
-           DISPLAY '     Name: '
-              FUNCTION TRIM(HV-Cust-First-Name), SPACE,
-              FUNCTION TRIM(HV-Cust-Last-Name).
-           DISPLAY '  Address: '
+           DISPLAY '     Name: ' 
+              FUNCTION TRIM(HV-Cust-First-Name), SPACE, 
+              FUNCTION TRIM(HV-Cust-Last-Name).          
+           DISPLAY '  Address: ' 
               FUNCTION TRIM(HV-Cust-Address).
-           DISPLAY '           '
+           DISPLAY '           ' 
               FUNCTION TRIM(HV-Cust-City), SPACE,
               HV-Cust-State, SPACE, HV-Cust-ZipCode.
            DISPLAY '-------------------------------------------------'.
@@ -165,7 +170,7 @@
                  DISPLAY "SQLCODE = " SQLCODE
                  PERFORM 3000-End-Job
                  MOVE 8 TO RETURN-CODE
-                 GOBACK
+                 GOBACK 
               END-IF
            END-IF.
 
@@ -184,19 +189,13 @@
            PERFORM 9812-Create-Connection-To-DB1.
 
        9811-Get-Credentials.
-           ACCEPT DB1-DBName FROM ENVIRONMENT 'db2name'.
-           ACCEPT DB1-User-ID FROM ENVIRONMENT 'username'.
-           ACCEPT DB1-Passwd-Name FROM ENVIRONMENT 'password'.
-
-      *    Passwords in a CONNECT statement should be entered
-      *    in a VARCHAR format with the length of the input string.
-           INSPECT DB1-Passwd-Name
-              TALLYING DB1-Passwd-Length
+           MOVE 'GETDBID' TO WS-GetDBId
+           CALL WS-GetDBId USING DB-User-ID, DB-Passwd-Name.
+      * Passwords in a CONNECT statement must be entered in a VARCHAR
+      * format with the length of the input string.
+           INSPECT DB-Passwd-Name
+              TALLYING DB-Passwd-Length
               FOR CHARACTERS BEFORE INITIAL " ".
-
-      D    DISPLAY "DB1-DBName " DB1-DBName.
-      D    DISPLAY "DB1-User-ID " DB1-User-ID.
-      D    DISPLAY "DB1-Passwd-Name " DB1-Passwd-Name.
 
        9812-Create-Connection-To-DB1.
            PERFORM 9814-Connect-To-DB1
@@ -208,10 +207,9 @@
            END-IF.
 
        9814-Connect-To-DB1.
-           EXEC SQL
-                CONNECT TO :DB1-DBName
-                USER :DB1-User-ID
-                USING :DB1-Password
+           EXEC SQL CONNECT TO :DB-Alias
+                USER :DB-User-ID
+                USING :DB-Passwd-Name
               END-EXEC.
            MOVE SQLCODE TO WS-SQL-STATUS.
 

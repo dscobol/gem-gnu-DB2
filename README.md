@@ -182,11 +182,15 @@ The records in the table should be displayed.
 
 ### Running the Code:
 
-#### This next step only needs to be done once.
+This next step only needs to be done once.
 
-Copy docs/Code-GETDBID.txt into the tcbl directory and rename to: GETDBID.cbl.
+#### Create the .env file
+**IMPORTANT NOTE:**
+The .env file will contain the userid and password to the database. **MAKE SURE** to add ".env" to your .gitignore so when you commit changes, the .env file will NOT be included.
 
-Edit GETDBID.cbl changing 'username' to the userid and 'password' to the password. Only replace the text within the quotes! Make sure the userid and password are surrounded by quotes. NOTE: DB2/SQL is not as case-sensitive as Linux BUT the password MUST match the case of the password when you created the userid.
+Copy docs/Code-env.txt to the GEM root and rename to .env .
+
+Edit .env  changing name to murach , userid to the userid and passwd to the password.
 
 #### Run CUSTINQ
 Copy docs/Code-prep-bind.txt into the sql directory and rename to: CUSTINQ.sql. NOTE: Linux is case-sensitive. CUSTINQ must be uppercase.
