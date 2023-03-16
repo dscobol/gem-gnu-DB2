@@ -8,6 +8,7 @@
       * Date       Author        Maintenance Requirement
       * ---------- ------------  --------------------------------
       * 2023-03-08 dscobol       Created to learn.
+      * 2023-03-14 dscobol       Use env vars from .env file.
       * 20XX-XX-XX               If you change me, change this.
       *
       **********************************************************
