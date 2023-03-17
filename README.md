@@ -79,11 +79,11 @@ Complete these steps in this order:
 
 Expanded instructions for the steps follow:
 
-- Create the missing directories
-- Create the MURACH db
-- Copy and update the code from p-sqlscripts to SQLScripts
-- Run the scripts in SQLScripts to create and load the tables
-- Running the Code
+1. Create the missing directories
+2. Create the MURACH db
+3. Copy and update the code from p-sqlscripts to SQLScripts
+4. Run the scripts in SQLScripts to create and load the tables
+5. Running the Code
 
 ### Create the missing directories
 In the root directory, Run:
@@ -133,7 +133,7 @@ Use your preferred method to copy the CUSTOMER and INVOICE directories from p-sq
 
 There are multiple .sql and .sh files within those directories.
 
-Update each .sql file with the correct DB userid and password.
+Update each .sql file with the correct DB, userid, and password.
 
 ### Run the scripts in SQLScripts to create and load the tables
 CD into SQLScripts/CUSTOMER
@@ -190,16 +190,18 @@ The .env file will contain the userid and password to the database. **MAKE SURE*
 
 Copy docs/Code-env.txt to the GEM root and rename to .env .
 
-Edit .env  changing name to murach , userid to the userid and passwd to the password.
+- Edit .env  changing name to murach , userid to the userid and passwd to the password.
 
 #### Run CUSTINQ
 Copy docs/Code-prep-bind.txt into the sql directory and rename to: CUSTINQ.sql. NOTE: Linux is case-sensitive. CUSTINQ must be uppercase.
 
-Update the top line replacing DB with MURACH, username with the Murach DB userid (typically db2inst1) and the password.
+- Update the top line replacing DB with MURACH, username with the Murach DB userid (typically db2inst1) and the password.
+
+- Replace "PGM" with "CUSTINQ" in all 3 (.sqb, .cbl, .bnd) locations.
 
 The "job" is divided into 2 scripts:
-- "prep, bind, compile, and link"
-- "run".
+1. "prep, bind, compile, and link"
+2. "run".
 
 In the terminal, cd into the jcl directory and run:
 ```
@@ -220,11 +222,13 @@ Hint: 400001 is a good customer number. Look at the data you loaded for other go
 #### Run INVREG
 Copy docs/Code-prep-bind.txt into the sql directory and rename to: INVREG.sql. NOTE: Linux is case-sensitive. INVREG must be uppercase.
 
-Update the top line replacing DB with MURACH, username with the Murach DB userid (typically db2inst1) and the password.
+- Update the top line replacing DB with MURACH, username with the Murach DB userid (typically db2inst1) and the password.
+
+- Replace "PGM" with "INVREG" in all 3 (.sqb, .cbl, .bnd) locations.
 
 The "job" is divided into 2 scripts:
-- "prep, bind, compile, and link"
-- "run".
+1. "prep, bind, compile, and link"
+2. "run".
 
 In the terminal, cd into the jcl directory and run:
 ```
@@ -241,11 +245,13 @@ and some results will print on the screen, and a report will be created in the /
 #### Run SALESINQ
 Copy docs/Code-prep-bind.txt into the sql directory and rename to: SALESINQ.sql. NOTE: Linux is case-sensitive. SALESINQ must be uppercase.
 
-Update the top line replacing DB with MURACH, username with the Murach DB userid (typically db2inst1) and the password.
+- Update the top line replacing DB with MURACH, username with the Murach DB userid (typically db2inst1) and the password.
+
+- Replace "PGM" with "SALESINQ" in all 3 (.sqb, .cbl, .bnd) locations.
 
 The "job" is divided into 2 scripts:
-- "prep, bind, compile, and link"
-- "run".
+1. "prep, bind, compile, and link"
+2. "run".
 
 In the terminal, cd into the jcl directory and run:
 ```
@@ -277,11 +283,13 @@ to create that Indexed file.
 
 Copy docs/Code-prep-bind.txt into the sql directory and rename to: UPDTCUST.sql. NOTE: Linux is case-sensitive. UPDTCUST must be uppercase.
 
-Update the top line replacing DB with MURACH, username with the Murach DB userid (typically db2inst1) and the password.
+- Update the top line replacing DB with MURACH, username with the Murach DB userid (typically db2inst1) and the password.
+
+- Replace "PGM" with "UPDTCUST" in all 3 (.sqb, .cbl, .bnd) locations.
 
 The "job" is divided into 2 scripts:
-- "prep, bind, compile, and link"
-- "run".
+1. "prep, bind, compile, and link"
+2. "run".
 
 In the terminal, cd into the jcl directory and run:
 ```
@@ -316,11 +324,13 @@ Then:
 
 Copy docs/Code-prep-bind.txt into the sql directory and rename to: UPDTROLL.sql. NOTE: Linux is case-sensitive. UPDTROLL must be uppercase.
 
-Update the top line replacing DB with MURACH, username with the Murach DB userid (typically db2inst1) and the password.
+- Update the top line replacing DB with MURACH, username with the Murach DB userid (typically db2inst1) and the password.
+
+- Replace "PGM" with "UPDTROLL" in all 3 (.sqb, .cbl, .bnd) locations.
 
 The "job" is divided into 2 scripts:
-- "prep, bind, compile, and link"
-- "run".
+1. "prep, bind, compile, and link"
+2. "run".
 
 In the terminal, cd into the jcl directory and run:
 ```
